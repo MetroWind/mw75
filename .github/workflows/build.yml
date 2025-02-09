@@ -20,7 +20,7 @@ jobs:
     - name: Move files around
       run: |
         mv id75rp/id75v3rp qmk_firmware/keyboards/ymdk/
-        mv mw75 qmk_firmware/keyboards/ymdk/id75v3rp/
+        mv mw75 qmk_firmware/keyboards/ymdk/id75v3rp/keymaps/
 
     - name: Build
       run: util/docker_build.sh ymdk/id75v3rp:mw75
