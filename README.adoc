@@ -1,0 +1,16 @@
+= MW75
+
+The convenient ortholinear layout
+
+== Features
+
+- Numpad/nav in the middle
+- The whole numpad lights up when switching to numpad mode
+
+== Layout
+
+image::layout-0.png[]
+
+image::layout-1.png[]
+
+image::layout-2.png[]
