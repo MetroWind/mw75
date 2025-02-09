@@ -1,0 +1,53 @@
+name: Build QMK firmware
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Get qmk
+      run: git clone --recurse-submodules https://github.com/qmk/qmk_firmware.git
+    - name: Get ID75rp setup
+      run: git clone https://github.com/mgsg/id75rp.git
+    - name: Move files around
+      run: |
+        mv id75rp/id75v3rp qmk_firmware/keyboards/ymdk/
+        mv mw75 qmk_firmware/keyboards/ymdk/id75v3rp/
+
+    - name: Build
+      run: util/docker_build.sh ymdk/id75v3rp:mw75
+      working-directory: ./qmk_firmware
+
+    - name: Create Draft Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: firmware-${{ github.sha }}
+        release_name:  Firmware ${{ github.sha }}
+        draft: true
+        prerelease: false
+
+    - uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: "${{github.workspace}}/qmk_firmware/.build/ymdk_id75v3rp_mw75.uf2"
+        asset_name: ymdk_id75v3rp_mw75.uf2
+        asset_content_type: application/octet-stream
+
+    - uses: eregon/publish-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        release_id: ${{ steps.create_release.outputs.id }}
